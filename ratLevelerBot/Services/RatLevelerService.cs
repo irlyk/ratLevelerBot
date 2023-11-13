@@ -1,33 +1,44 @@
 using RatLevelerBot.Models;
+using RatLevelerBot.Services.Repositories;
 
 namespace RatLevelerBot.Services;
 
 public class RatLevelerService : IRatLevelerService
 {
-    private readonly IUserRepository _userRepository;
-
-    private readonly IChatRepository _chatRepository;
-
-    private readonly ILevelRepository _levelRepository;
+    private readonly IRepository<User> _userRepository;
+    private readonly IRepository<Chat> _chatRepository;
+    private readonly IRepository<Level> _levelRepository;
+    private readonly IRepository<UserLevel> _userLevelRepository;
 
     public RatLevelerService(
-        IUserRepository userRepository,
-        IChatRepository chatRepository,
-        ILevelRepository levelRepository
-    )
+        IRepository<User> userRepository,
+        IRepository<Chat> chatRepository,
+        IRepository<Level> levelRepository,
+        IRepository<UserLevel> userLevelRepository)
     {
         _userRepository = userRepository;
         _chatRepository = chatRepository;
         _levelRepository = levelRepository;
+        _userLevelRepository = userLevelRepository;
+    }
+
+    public List<UserLevel>? GetChatLevels(long chatId) 
+    {
+        var chat = _chatRepository.GetById(chatId);
+        
+        if (chat == null) // chat doesn't exist
+            return null;
+        
+        return chat.UserLevels.ToList();
     }
 
     public UserLevel? GetUserLevelInChat(long userId, long chatId) 
     {
-        var chat = _chatRepository.GetById(chatId);
-        if (chat == null)
-            return null; // todo no such chat
+        var user = _userRepository.GetById(userId);
+        if (user == null) // todo user not exist
+            return null;
 
-        var userLevel = chat.UserLevels.FirstOrDefault(x => x.User.Id == userId);
+        var userLevel = user.UserLevels.FirstOrDefault(ul => ul.ChatId == chatId);
         if (userLevel == null)
             return null; // todo no user in chat
         
@@ -36,70 +47,47 @@ public class RatLevelerService : IRatLevelerService
 
     public Level? SetUserLevelInChat(long userId, long chatId, int levelValue) 
     {
-        var chat = _chatRepository.GetById(chatId);
-        if (chat == null) // todo no chat found
-            return null;
-        
-        var userLevel = chat.UserLevels.FirstOrDefault(x => x.User.Id == userId);
-        if (userLevel == null) // todo no such user in chat 
-            return null; 
-
         var level = _levelRepository.GetAll().FirstOrDefault(x => x.Value == levelValue);
         if (level == null) // todo no such level 
             return null; 
         
-        userLevel.Level = level;
-        userLevel.Exp = level.Exp;
+        var userLevel = _userLevelRepository.FindBy(ul => ul.UserId == userId && ul.ChatId == chatId);
+        if (userLevel == null) 
+            return null; // todo UserLevel doesn't exists
 
-        _chatRepository.Update(chat);
-        _chatRepository.Save();
+        userLevel.SetLevel(level);
 
+        _userLevelRepository.Update(userLevel);
+        _userLevelRepository.Save();
+
+        return level;
+    }
+
+    public Level? ResetLevel(long userId, long chatId)
+    {
+        var level = SetUserLevelInChat(userId, chatId, Level.FirstLevel);
         return level;
     }
 
     public void AddNewChatUser(User user, Chat chat) 
     {
-        var firstLevel = _levelRepository.GetAll().FirstOrDefault(x => x.Value == Level.FirstLevel);
-        if (firstLevel == null) // todo no first level
-            return;
+        var firstLevel = _levelRepository.FindBy(x => x.Value == Level.FirstLevel);
 
-        // if user doesn't exist -> add new user
-        var dbUser = _userRepository.GetById(user.Id);
-        if (dbUser == null) 
-        {
-            _userRepository.Insert(user);
-            _userRepository.Save();
-        }
+        if (firstLevel == null) 
+            return; // todo firstLevel doesn't exists
 
-        var dbChat = _chatRepository.GetById(chat.Id);
+        var userLevel = _userLevelRepository.FindBy(ul => ul.UserId == user.Id && ul.ChatId == chat.Id);
 
-        // if chat not exist -> create new chat
-        if (dbChat == null) 
-        {
-            chat.UserLevels.Add(new UserLevel {
-                User = user,
-                Level = firstLevel
-            });
-            _chatRepository.Insert(chat);
-            _chatRepository.Save();
-            return;
-        }
-
-        var userInChat = dbChat.UserLevels.FirstOrDefault(x => x.User.Id == user.Id);
-        if (userInChat != null) // todo user in chat exist
-            return;
+        if (userLevel != null) 
+            return; // todo UserLevel exists
         
-        dbChat.UserLevels.Add(new UserLevel {
+        _userLevelRepository.Insert(new UserLevel {
             User = user,
-            Level = firstLevel
+            Level = firstLevel,
+            Chat = chat,
+            Exp = firstLevel.Exp
         });
-        _chatRepository.Update(dbChat);
-        _chatRepository.Save();
+        _userLevelRepository.Save();
     }
 
-    // todo implement reset level
-    public Level ResetLevel(User user, Chat chat)
-    {
-        throw new NotImplementedException();
-    }
 }

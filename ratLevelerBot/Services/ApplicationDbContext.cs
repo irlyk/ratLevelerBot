@@ -11,14 +11,26 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Level> Levels => Set<Level>();
 
+    public DbSet<UserLevel> UserLevels => Set<UserLevel>();
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base (options) => Database.EnsureCreated();
+        : base (options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Chat>().HasMany(e => e.UserLevels)
             .WithOne(e => e.Chat)
             .HasForeignKey(e => e.ChatId)
+            .IsRequired();
+        
+        modelBuilder.Entity<User>().HasMany(e => e.UserLevels)
+            .WithOne(e => e.User)
+            .HasForeignKey(e => e.ChatId)
+            .IsRequired();
+
+        modelBuilder.Entity<Level>().HasMany(e => e.UserLevels)
+            .WithOne(e => e.Level)
+            .HasForeignKey(e => e.LevelId)
             .IsRequired();
 
         modelBuilder.Entity<Level>().HasData(

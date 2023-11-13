@@ -1,11 +1,12 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using RatLevelerBot.Models;
 
-namespace RatLevelerBot.Services;
+namespace RatLevelerBot.Services.Repositories;
 
-public class LevelRepository : ILevelRepository, IDisposable
+public class LevelRepository : IRepository<Level>, IDisposable
 {
-    private ApplicationDbContext _context;
+    private readonly ApplicationDbContext _context;
 
     public LevelRepository(ApplicationDbContext context)
 	{
@@ -17,24 +18,34 @@ public class LevelRepository : ILevelRepository, IDisposable
         return _context.Levels;   
     }
 
-    public Level? GetById(int levelId) 
+    public Level? GetById(long id) 
     {
-        return _context.Levels.Find(levelId); 
+        return _context.Levels.Find(id); 
     }
 
-    public void Insert(Level level)
+    public Level? FindBy(Expression<Func<Level, bool>> expression)
     {
-        _context.Levels.Add(level);
+        return _context.Levels.FirstOrDefault(expression);
     }
 
-    public void Update(Level level)
+    public IQueryable<Level>? FilterBy(Expression<Func<Level, bool>> expression)
     {
-        _context.Entry(level).State = EntityState.Modified;
+        return _context.Levels.Where(expression);
     }
 
-    public void Delete(int levelId)
+    public void Insert(Level item)
     {
-        var level = _context.Levels.Find(levelId);
+        _context.Levels.Add(item);
+    }
+
+    public void Update(Level item)
+    {
+        _context.Entry(item).State = EntityState.Modified;
+    }
+
+    public void Delete(long id)
+    {
+        var level = _context.Levels.Find(id);
 
         if(level != null)
         {

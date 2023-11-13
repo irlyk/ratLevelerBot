@@ -4,7 +4,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:37137",
+      "applicationUrl": "http://localhost:8443",
       "sslPort": 0
     }
   },
@@ -12,7 +12,7 @@
     "RatLevelerBot": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:13758",
+      "applicationUrl": "http://localhost:8443",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

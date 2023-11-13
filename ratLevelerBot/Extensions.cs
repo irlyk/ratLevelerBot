@@ -2,6 +2,8 @@
 using Telegram.Bot.Types;
 using UserInternal = RatLevelerBot.Models.User;
 using ChatInternal = RatLevelerBot.Models.Chat;
+using UserLevelInternal = RatLevelerBot.Models.UserLevel;
+using LevelInternal = RatLevelerBot.Models.Level;
 
 namespace RatLevelerBot;
 
@@ -75,5 +77,15 @@ public static class MessageExtensions
             Id = telegramChat.Id,
             Name = chatName
         };
+    }
+}
+
+public static class LevelExtensions 
+{
+    public static UserLevelInternal SetLevel(this UserLevelInternal userLevel, LevelInternal level) 
+    {
+        userLevel.Level = level;
+        userLevel.Exp = level.Exp;
+        return userLevel;
     }
 }

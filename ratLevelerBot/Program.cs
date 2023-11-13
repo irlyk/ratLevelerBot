@@ -1,6 +1,8 @@
 ﻿using RatLevelerBot;
+using RatLevelerBot.Models;
 using RatLevelerBot.Options;
 using RatLevelerBot.Services;
+using RatLevelerBot.Services.Repositories;
 using RatLevelerBot.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
@@ -25,9 +27,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add repositories
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<ILevelRepository, LevelRepository>();
-builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<IRepository<User>, UserRepository>();
+builder.Services.AddScoped<IRepository<Level>, LevelRepository>();
+builder.Services.AddScoped<IRepository<Chat>, ChatRepository>();
+builder.Services.AddScoped<IRepository<UserLevel>, UserLevelRepository>();
 
 builder.Services.AddScoped<IRatLevelerService, RatLevelerService>();
 

@@ -10,5 +10,5 @@ public interface IRatLevelerService
 
     void AddNewChatUser(User user, Chat chat);
 
-    Level ResetLevel(User user, Chat chat);
+    Level? ResetLevel(long userId, long chatId);
 }

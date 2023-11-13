@@ -62,7 +62,6 @@ public class BotCommandExecuter : IBotCommandExecuter
             replyToMessageId: message.MessageId,
             cancellationToken: cancellationToken
         );
-        
     }
     
     public async Task SetLevelCommand(Message message, CancellationToken cancellationToken) 
@@ -97,7 +96,7 @@ public class BotCommandExecuter : IBotCommandExecuter
 
     public async Task ResetLevelCommand(Message message, CancellationToken cancellationToken)
     {
-        var level = _ratLevelrService.ResetLevel(message.From.Conver(), message.Chat.Convert());
+        var level = _ratLevelrService.ResetLevel(message.From.Id, message.Chat.Id);
 
         await _botClient.SendTextMessageAsync(
             chatId: message.Chat.Id,
