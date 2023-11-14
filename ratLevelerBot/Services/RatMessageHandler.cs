@@ -64,27 +64,36 @@ public class RatMessageHandler
 
         var command = BotCommandsMapper.Map(comandString);
 
-        switch (command)
+        try 
         {
-            case BotCommands.Start:
-                await _botCommandExecuter.StartCommand(message, cancellationToken);
-                return;
-            case BotCommands.Level:
-                await _botCommandExecuter.GetLevelCommand(message, cancellationToken);
-                return;
-            case BotCommands.SetLevel:
-                await _botCommandExecuter.SetLevelCommand(message, cancellationToken);
-                return;
-            case BotCommands.NewRat:
-                await _botCommandExecuter.NewRatCommand(message, cancellationToken);
-                return;
-            case BotCommands.ResetLevel:
-                await _botCommandExecuter.ResetLevelCommand(message, cancellationToken);
-                return;
-            case BotCommands.Unknown:
-                await _botCommandExecuter.SendUnknownCommand(message, cancellationToken);
-                return;
+            switch (command)
+            {
+                case BotCommands.Start:
+                    await _botCommandExecuter.StartCommand(message, cancellationToken);
+                    return;
+                case BotCommands.Level:
+                    await _botCommandExecuter.GetLevelCommand(message, cancellationToken);
+                    return;
+                case BotCommands.SetLevel:
+                    await _botCommandExecuter.SetLevelCommand(message, cancellationToken);
+                    return;
+                case BotCommands.NewRat:
+                    await _botCommandExecuter.NewRatCommand(message, cancellationToken);
+                    return;
+                case BotCommands.ResetLevel:
+                    await _botCommandExecuter.ResetLevelCommand(message, cancellationToken);
+                    return;
+                case BotCommands.Unknown:
+                    await _botCommandExecuter.SendUnknownCommand(message, cancellationToken);
+                    return;
+            }
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            await _botCommandExecuter.SendErrorCommand(message, cancellationToken);
+        }
+
     }
 }
 

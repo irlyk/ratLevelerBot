@@ -112,9 +112,25 @@ public class BotCommandExecuter : IBotCommandExecuter
         await _botClient.SendTextMessageAsync(
             chatId: message.Chat.Id,
             text: $"Я не знаю такой команды(",
-            // replyToMessageId: message.MessageId,
+            replyToMessageId: message.MessageId,
             cancellationToken: cancellationToken
         );
+    }
+
+    public async Task SendErrorCommand(Message message, CancellationToken cancellationToken)
+    {
+        try {
+            await _botClient.SendTextMessageAsync(
+                chatId: message.Chat.Id,
+                text: $"Извините, произошла ошибка",
+                replyToMessageId: message.MessageId,
+                cancellationToken: cancellationToken
+            );
+        } 
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+        }
     }
 }
 

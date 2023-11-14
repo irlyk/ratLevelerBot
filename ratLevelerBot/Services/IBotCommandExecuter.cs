@@ -15,4 +15,6 @@ public interface IBotCommandExecuter
     Task ResetLevelCommand(Message message, CancellationToken cancellationToken);
 
     Task SendUnknownCommand(Message message, CancellationToken cancellationToken);
+
+    Task SendErrorCommand(Message message, CancellationToken cancellationToken);
 }
