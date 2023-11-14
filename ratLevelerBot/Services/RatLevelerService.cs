@@ -26,7 +26,7 @@ public class RatLevelerService : IRatLevelerService
     {
         var chat = _chatRepository.GetById(chatId);
         
-        if (chat == null) // chat doesn't exist
+        if (chat == null) // todo chat doesn't exist
             return null;
         
         return chat.UserLevels.ToList();
@@ -34,11 +34,11 @@ public class RatLevelerService : IRatLevelerService
 
     public UserLevel? GetUserLevelInChat(long userId, long chatId) 
     {
-        var user = _userRepository.GetById(userId);
+        var user = _chatRepository.GetById(chatId);
         if (user == null) // todo user not exist
             return null;
 
-        var userLevel = user.UserLevels.FirstOrDefault(ul => ul.ChatId == chatId);
+        var userLevel = user.UserLevels.FirstOrDefault(ul => ul.User.Id == userId);
         if (userLevel == null)
             return null; // todo no user in chat
         
@@ -51,7 +51,7 @@ public class RatLevelerService : IRatLevelerService
         if (level == null) // todo no such level 
             return null; 
         
-        var userLevel = _userLevelRepository.FindBy(ul => ul.UserId == userId && ul.ChatId == chatId);
+        var userLevel = _userLevelRepository.FindBy(ul => ul.User.Id == userId && ul.Chat.Id == chatId);
         if (userLevel == null) 
             return null; // todo UserLevel doesn't exists
 
@@ -76,18 +76,33 @@ public class RatLevelerService : IRatLevelerService
         if (firstLevel == null) 
             return; // todo firstLevel doesn't exists
 
-        var userLevel = _userLevelRepository.FindBy(ul => ul.UserId == user.Id && ul.ChatId == chat.Id);
+        var chatDb = _chatRepository.GetById(chat.Id);
 
-        if (userLevel != null) 
-            return; // todo UserLevel exists
-        
-        _userLevelRepository.Insert(new UserLevel {
-            User = user,
-            Level = firstLevel,
-            Chat = chat,
-            Exp = firstLevel.Exp
-        });
-        _userLevelRepository.Save();
+        // if chat exist - update Chat
+        if (chatDb == null) 
+        {
+            chat.UserLevels.Add(new UserLevel 
+            {
+                User = user,
+                Level = firstLevel,
+                Exp = firstLevel.Exp,
+            });
+            _chatRepository.Insert(chat);
+        }
+        else 
+        {
+            if (chatDb.UserLevels.FirstOrDefault(ul => ul.User.Id == user.Id) != null) 
+                return; // todo UserLevel exists
+            
+            chat.UserLevels.Add(new UserLevel 
+            {
+                User = user,
+                Level = firstLevel,
+                Exp = firstLevel.Exp,
+            });
+            _chatRepository.Update(chat);
+        }
+        _chatRepository.Save();
     }
 
 }
