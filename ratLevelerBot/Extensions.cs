@@ -61,7 +61,7 @@ public static class MessageExtensions
         return new UserInternal {
             Id = telegramUser.Id,
             FirstName = telegramUser.FirstName,
-            LastName = telegramUser.LastName
+            LastName = telegramUser.LastName ?? "Unknown Name" // todo add to String consts
         };
     }
 
@@ -71,7 +71,7 @@ public static class MessageExtensions
         if (!string.IsNullOrEmpty(telegramChat.FirstName) && !string.IsNullOrEmpty(telegramChat.LastName))
             chatName = $"{telegramChat.FirstName} {telegramChat.LastName}";
         else 
-            chatName = telegramChat.Title;
+            chatName = telegramChat.Title ?? "Unknow Chat"; // todo add to String  Consts
 
         return new ChatInternal {
             Id = telegramChat.Id,

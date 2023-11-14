@@ -48,10 +48,11 @@ public class RatMessageHandler
             //{ CallbackQuery: { } callbackQuery } => BotOnCallbackQueryReceived(callbackQuery, cancellationToken),
             //{ InlineQuery: { } inlineQuery } => BotOnInlineQueryReceived(inlineQuery, cancellationToken),
             //{ ChosenInlineResult: { } chosenInlineResult } => BotOnChosenInlineResultReceived(chosenInlineResult, cancellationToken),
-            //_ => UnknownUpdateHandlerAsync(update, cancellationToken)
+            _ => UnknownUpdateHandlerAsync(),
         };
 
-        await handler;
+        if (handler != null)
+            await handler;
     }
 
     private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
@@ -93,7 +94,13 @@ public class RatMessageHandler
             _logger.LogError(ex.Message);
             await _botCommandExecuter.SendErrorCommand(message, cancellationToken);
         }
+    }
 
+    // todod rework Unknown update type handler
+    private Task UnknownUpdateHandlerAsync() 
+    {
+        _logger.LogInformation("Unknown update type");
+        return Task.CompletedTask;
     }
 }
 

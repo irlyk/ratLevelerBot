@@ -15,6 +15,10 @@ builder.Services.Configure<BotConfiguration>(botConfigurationSection);
 
 var botConfiguration = botConfigurationSection.Get<BotConfiguration>();
 
+if (botConfiguration == null) {
+    throw new NullReferenceException(nameof(BotConfiguration));
+}
+
 builder.Services.AddHttpClient("telegram_bot_client")
     .AddTypedClient<ITelegramBotClient>((httpClient, sp) =>
     {
