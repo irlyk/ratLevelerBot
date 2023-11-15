@@ -1,18 +1,27 @@
 ﻿namespace RatLevelerBot.Helpers;
 
 public static class BotCommandsMapper
-	{
+{
     public static BotCommands Map(string? command)
         => command switch
         {
-            "/start" => BotCommands.Start,
-            "/level" => BotCommands.Level,
-            "/newrat" => BotCommands.NewRat,
-            "/resetlevel" => BotCommands.ResetLevel,
-            "/setlevel" => BotCommands.SetLevel,
-            // "🐀" => BotCommands.Unknown,
+            Consts.StartComand => BotCommands.Start,
+            Consts.LevelCommand  => BotCommands.Level,
+            Consts.NewRatCommand => BotCommands.NewRat,
+            Consts.ResetLevelCommand => BotCommands.ResetLevel,
+            Consts.SetLevelCommand => BotCommands.SetLevel,
+            Consts.IncreaseExpCommand => BotCommands.IncreaseExp,
             _ => BotCommands.Unknown
         };
+    
+    public static List<string> BotCommandsList = new List<string>(){
+        Consts.StartComand,
+        Consts.LevelCommand,
+        Consts.NewRatCommand,
+        Consts.ResetLevelCommand,
+        Consts.SetLevelCommand,
+        Consts.IncreaseExpCommand
+    };
 }
 
 public enum BotCommands
@@ -22,6 +31,6 @@ public enum BotCommands
     SetLevel,
     NewRat,
     ResetLevel,
+    IncreaseExp,
     Unknown
 }
-

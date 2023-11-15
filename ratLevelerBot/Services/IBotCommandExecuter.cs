@@ -17,4 +17,6 @@ public interface IBotCommandExecuter
     Task SendUnknownCommand(Message message, CancellationToken cancellationToken);
 
     Task SendErrorCommand(Message message, CancellationToken cancellationToken);
+
+    Task IncreaseExpCommand(Message message, CancellationToken cancellationToken);
 }

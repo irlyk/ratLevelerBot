@@ -107,6 +107,31 @@ public class BotCommandExecuter : IBotCommandExecuter
         
     }
 
+    public async Task IncreaseExpCommand(Message message, CancellationToken cancellationToken) 
+    {
+        // message not replied
+        if (message.ReplyToMessage?.From == null) 
+        {
+            _logger.LogError("No replied user");
+            await SendUnknownCommand(message, cancellationToken);
+            return;
+        }
+
+        var replyUserId = message.ReplyToMessage.From.Id;
+        var level = _ratLevelrService.IncreaseUserChatExp(replyUserId, message.Chat.Id, Consts.DefaultExpIncrease);
+
+        if (level != null) 
+        {
+            await _botClient.SendTextMessageAsync(
+                chatId: message.Chat.Id,
+                text: $"Уровень крыски {message.ReplyToMessage.From.GetPrettyName()} повышен до {level.Name}",
+                replyToMessageId: message.MessageId,
+                cancellationToken: cancellationToken
+            );
+        }
+
+    }
+    
     public async Task SendUnknownCommand(Message message, CancellationToken cancellationToken)
     {
         await _botClient.SendTextMessageAsync(

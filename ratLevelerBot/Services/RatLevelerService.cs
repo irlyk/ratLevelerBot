@@ -105,4 +105,36 @@ public class RatLevelerService : IRatLevelerService
         _chatRepository.Save();
     }
 
+    public Level? IncreaseUserChatExp(long userId, long chatId, long exp) 
+    {
+        var chat = _chatRepository.GetById(chatId);
+        if (chat == null)
+            return null; // todo chat doosn't exist
+
+        var userLevel = chat.UserLevels.FirstOrDefault(ul => ul.User.Id == userId);
+        if (userLevel == null)
+            return null; // todo user not exist in chat
+        
+        userLevel.Exp += exp;
+
+
+        var level = _levelRepository.FilterBy(l => l.Exp >= userLevel.Exp)?
+                                    .OrderBy(l => l.Value)
+                                    .FirstOrDefault();
+        if (level == null)
+            return null; // todo level doesn't exist
+        
+        // todo change to messages for less code
+        if (userLevel.Level.Value != level.Value && userLevel.Exp >= level.Exp) 
+        {
+            userLevel.SetLevel(level);
+            _userLevelRepository.Update(userLevel);
+            _userRepository.Save();
+            return level;
+        }
+
+        _userLevelRepository.Update(userLevel);
+        _userLevelRepository.Save();
+        return null;
+    }
 }

@@ -57,10 +57,13 @@ public class RatMessageHandler
 
     private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Receive message type: {MessageType}", message.Type);
-        
-        var comandString = message.Text?.ToLower().Split(' ')[0];
+        var comandString = message.Text?.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
 
+        // todo maybe log if not a command
+        if (string.IsNullOrEmpty(comandString) || !BotCommandsMapper.BotCommandsList.Contains(comandString)) 
+            return;
+
+        _logger.LogInformation("Receive message type: {MessageType}", message.Type);
         _logger.LogInformation($"Chat {message.Chat.Id} comandString");
 
         var command = BotCommandsMapper.Map(comandString);
@@ -83,6 +86,9 @@ public class RatMessageHandler
                     return;
                 case BotCommands.ResetLevel:
                     await _botCommandExecuter.ResetLevelCommand(message, cancellationToken);
+                    return;
+                case BotCommands.IncreaseExp:
+                    await _botCommandExecuter.IncreaseExpCommand(message, cancellationToken);
                     return;
                 case BotCommands.Unknown:
                     await _botCommandExecuter.SendUnknownCommand(message, cancellationToken);
