@@ -3,6 +3,7 @@
 public class Consts
 {
     public const string StartComand = "/start";
+    public const string ChatLevelsComand = "/chatlevels";
     public const string LevelCommand = "/level";
     public const string NewRatCommand = "/newrat";
     public const string ResetLevelCommand = "/resetlevel";

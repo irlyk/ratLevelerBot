@@ -33,6 +33,33 @@ public class BotCommandExecuter : IBotCommandExecuter
         );
     }
 
+    public async Task GetChatLevels(Message message, CancellationToken cancellationToken) 
+    {
+        var levels = _ratLevelrService.GetChatLevels(message.Chat.Id);
+        if (levels == null)
+        {
+            await _botClient.SendTextMessageAsync(
+                chatId: message.Chat.Id,
+                text: "В чате нет отслеживаемых крысок",
+                replyToMessageId: message.MessageId,
+                cancellationToken: cancellationToken
+            );
+        }
+        else 
+        {
+            var levelsMessage = string.Join(  
+                '\n',
+                levels.Select(l =>$"{l.User.FirstName} {l.User.LastName} - {l.Level.Name} ({l.Level.Value} уровень)")
+            );
+            await _botClient.SendTextMessageAsync(
+                chatId: message.Chat.Id,
+                text: $"Уровень крысок: \n {levelsMessage}",
+                replyToMessageId: message.MessageId,
+                cancellationToken: cancellationToken
+            );
+        }
+    }
+
     public async Task NewRatCommand(Message message, CancellationToken cancellationToken)
     {
         _ratLevelrService.AddNewChatUser(message.From.Conver(), message.Chat.Convert());

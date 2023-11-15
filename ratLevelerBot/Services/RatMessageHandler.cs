@@ -75,6 +75,9 @@ public class RatMessageHandler
                 case BotCommands.Start:
                     await _botCommandExecuter.StartCommand(message, cancellationToken);
                     return;
+                case BotCommands.ChatLevels:
+                    await _botCommandExecuter.GetChatLevels(message, cancellationToken);
+                    return;
                 case BotCommands.Level:
                     await _botCommandExecuter.GetLevelCommand(message, cancellationToken);
                     return;

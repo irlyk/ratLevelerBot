@@ -6,6 +6,8 @@ public interface IBotCommandExecuter
 {
     Task StartCommand(Message message, CancellationToken cancellationToken);
 
+    Task GetChatLevels(Message message, CancellationToken cancellationToken);
+    
     Task GetLevelCommand(Message message, CancellationToken cancellationToken);
 
     Task SetLevelCommand(Message message, CancellationToken cancellationToken);

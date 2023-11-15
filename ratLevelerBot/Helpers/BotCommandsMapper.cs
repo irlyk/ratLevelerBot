@@ -6,6 +6,7 @@ public static class BotCommandsMapper
         => command switch
         {
             Consts.StartComand => BotCommands.Start,
+            Consts.ChatLevelsComand => BotCommands.ChatLevels,
             Consts.LevelCommand  => BotCommands.Level,
             Consts.NewRatCommand => BotCommands.NewRat,
             Consts.ResetLevelCommand => BotCommands.ResetLevel,
@@ -16,6 +17,7 @@ public static class BotCommandsMapper
     
     public static List<string> BotCommandsList = new List<string>(){
         Consts.StartComand,
+        Consts.ChatLevelsComand,
         Consts.LevelCommand,
         Consts.NewRatCommand,
         Consts.ResetLevelCommand,
@@ -27,6 +29,7 @@ public static class BotCommandsMapper
 public enum BotCommands
 {
     Start,
+    ChatLevels,
     Level,
     SetLevel,
     NewRat,
